@@ -2,8 +2,57 @@
   (if (null? arr)
     -1
     (if (eq? pos destination-pos)
-      (car arr)
+      (begin
+        (display (car arr))
+        (car arr)
+        )
       (value-at (cdr arr) (+ pos 1) destination-pos)
       )
     )
+  )
+(define (display-with-types-rec l first)
+  (if first
+    (if (pair? l)
+      (display "(")
+      )
+    )
+  (if (null? l)
+    (display ") ")
+    (if (number? l)
+      (begin
+        (if first
+          (display "")
+          (display " ")
+          )
+        (display l)
+        (display "")
+        )
+      (if (string? l)
+        (begin
+          (if first
+            (display "\"")
+            (display " \"")
+            )
+          (display l)
+          (display "\"")
+          )
+        (if (pair? (car l))
+          (begin
+            (display-with-types-rec (car l) #t)
+            (display-with-types-rec (cdr l) #f)
+            )
+          (if (pair? l)
+            (begin
+              (display-with-types-rec (car l) first)
+              (display-with-types-rec (cdr l) #f)
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+
+(define (display-with-types l )
+  (display-with-types-rec l #t)
   )
