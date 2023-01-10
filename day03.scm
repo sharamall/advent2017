@@ -1,0 +1,83 @@
+(module day03
+  (include "utils.scm")
+  )
+
+(define (calculate-expt-base a)
+  (if (eq? 0 (modulo a 2))
+    (+ a 1)
+    a
+    )
+  )
+(define (calculate-a x)
+  (inexact->exact (ceiling (sqrt x)))
+  )
+(define (calculate-ring exponent-base)
+  (/ (+ exponent-base 1) 2)
+  )
+(define (calculate-items-in-ring ring)
+  (- (expt ring 2) (expt (- ring 2) 2))
+  )
+(define (calculate-items-per-side items-in-ring)
+  (+ 1 (/ items-in-ring 4))
+  )
+(define (calculate-beginning-of-ring items-per-side items-in-ring)
+  (+ (- (expt items-per-side 2) items-in-ring) 1)
+  )
+(define (calculate-index-in-ring x beginning-of-ring)
+  (- x beginning-of-ring)
+  )
+(define (calculate-index-for-side index-in-ring items-per-side)
+  (modulo index-in-ring (- items-per-side 1))
+  )
+(define (calculate-horizontal-distance-to-center-of-side index-for-side ring)
+  (abs (- index-for-side (- ring 2)))
+  )
+(define (total-distance horizontal-distance ring)
+  (+ horizontal-distance (- ring 1))
+  )
+; -------------
+(define (calculate-with-x-ring-items-in-ring-items-per-side x ring items-in-ring items-per-side)
+  (total-distance
+    (calculate-horizontal-distance-to-center-of-side
+      (calculate-index-for-side
+        (calculate-index-in-ring x
+          (calculate-beginning-of-ring items-per-side items-in-ring)
+          ) items-per-side)
+      ring)
+    ring)
+  )
+
+(define (calculate-with-x-ring-items-in-ring x ring items-in-ring)
+  (calculate-with-x-ring-items-in-ring-items-per-side x ring items-in-ring
+    (calculate-items-per-side items-in-ring))
+  )
+
+(define (calculate-with-x-ring-expt-base x ring expt-base)
+  (calculate-with-x-ring-items-in-ring x ring (calculate-items-in-ring expt-base))
+  )
+(define (calculate-with-x-expt-base x expt-base)
+  (calculate-with-x-ring-expt-base x (calculate-ring expt-base) expt-base)
+  )
+(define (do-manhattan-dist x)
+  (if (eq? 1 x)
+    0
+    (calculate-with-x-expt-base x (calculate-expt-base (calculate-a x)))
+    )
+  )
+(define (manhattan-dist lst)
+  (if (null? lst)
+    '()
+    (begin
+      (display (do-manhattan-dist (string->integer (car lst))))
+      (display " ")
+      (manhattan-dist (cdr lst))
+      )
+    )
+  )
+
+(define (day3 in)
+  (manhattan-dist in)
+  (display " <- part 1\n")
+  )
+
+(day3 (string-split (read-string (open-input-file "day03in.txt")) "\n"))
