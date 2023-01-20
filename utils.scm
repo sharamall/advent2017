@@ -53,6 +53,18 @@
     )
   )
 
-(define (display-with-types l )
-  (display-with-types-rec l #t)
+(define (display-with-types l)
+  (if (boolean? l)
+    (if l
+      (display "true")
+      (display "false")
+      )
+    (display-with-types-rec l #t)
+    )
   )
+(define (delete-first item arr)
+  (cond
+    ((null? arr) '())
+    ((equal? (car arr) item) (cdr arr))
+    (else (cons (car arr) (delete-first item (cdr arr))))
+    ))
